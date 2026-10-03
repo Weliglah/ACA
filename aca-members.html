@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auckland Chess Academy — Members Area</title>
+
+<!--
+=============================================================
+  MEMBERS PAGE
+=============================================================
+  This page checks for a valid session token set by the
+  login page. If none is found, the visitor is immediately
+  redirected back to the login page.
+
+  Update LOGIN_PAGE_URL below to point to your login page.
+
+  The welcome content below (announcements, links, etc.)
+  can be freely edited — it is just placeholder content.
+=============================================================
+-->
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    font-family: 'Open Sans', Arial, sans-serif;
+    background: #f7f4f4;
+    color: #1e1515;
+    overflow-y: auto;
+  }
+
+  /* ── Top bar ── */
+  .top-bar {
+    background: #6b1212;
+    border-bottom: 3px solid #8a1a1a;
+    padding: 12px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .top-bar .chess-icon { font-size: 28px; }
+
+  .top-bar h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.4px;
+  }
+
+  .top-bar p {
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.6);
+    margin-top: 2px;
+  }
+
+  .btn-signout {
+    height: 32px;
+    padding: 0 16px;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 5px;
+    font-size: 12.5px;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-signout:hover { background: rgba(255,255,255,0.22); }
+
+  /* ── Page body ── */
+  .page-body {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 20px 40px;
+  }
+
+  /* ── Welcome banner ── */
+  .welcome-banner {
+    background: #fff;
+    border: 1px solid #e2d5d5;
+    border-left: 4px solid #6b1212;
+    border-radius: 6px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .welcome-banner .welcome-icon { font-size: 32px; }
+
+  .welcome-banner h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #6b1212;
+  }
+
+  .welcome-banner p {
+    font-size: 13px;
+    color: #6b5555;
+    margin-top: 3px;
+  }
+
+  /* ── Card grid ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 580px) {
+    .card-grid { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid #e2d5d5;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: #8a1a1a;
+    padding: 10px 16px;
+  }
+
+  .card-header h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .card-body {
+    padding: 16px 18px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #3a2a2a;
+  }
+
+  .card-body ul {
+    padding-left: 18px;
+    margin-top: 6px;
+  }
+
+  .card-body li { margin-bottom: 6px; }
+
+  .card-body a {
+    color: #6b1212;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .card-body a:hover { text-decoration: underline; }
+
+  /* ── Announcements ── */
+  .announcement {
+    background: #fff;
+    border: 1px solid #e2d5d5;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  .announcement-header {
+    background: #6b1212;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .announcement-header h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .announcement-header .date {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .announcement-body {
+    padding: 16px 18px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #3a2a2a;
+  }
+
+  /* ── Full-width card ── */
+  .card-full {
+    background: #fff;
+    border: 1px solid #e2d5d5;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  /* ── Footer ── */
+  .page-footer {
+    text-align: center;
+    font-size: 11.5px;
+    color: #9a8080;
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid #e2d5d5;
+  }
+
+  .page-footer a { color: #6b1212; text-decoration: none; font-weight: 600; }
+  .page-footer a:hover { text-decoration: underline; }
+
+  /* ── Hidden until auth check passes ── */
+  #page-content { display: none; }
+</style>
+</head>
+<body>
+
+<div id="page-content">
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <span class="chess-icon">♟</span>
+      <div>
+        <h1>Auckland Chess Academy — Members Area</h1>
+        <p id="user-label">Welcome back</p>
+      </div>
+    </div>
+    <button class="btn-signout" onclick="signOut()">Sign Out</button>
+  </div>
+
+  <div class="page-body">
+
+    <!-- Welcome banner -->
+    <div class="welcome-banner">
+      <span class="welcome-icon">♛</span>
+      <div>
+        <h2 id="welcome-heading">Welcome back!</h2>
+        <p>You have successfully signed in to the Auckland Chess Academy Members Area.</p>
+      </div>
+    </div>
+
+    <!-- Announcements -->
+    <div class="announcement">
+      <div class="announcement-header">
+        <h3>📢 Latest Announcement</h3>
+        <span class="date">October 2026</span>
+      </div>
+      <div class="announcement-body">
+        <strong>2026 NZCF Interschools — Registrations Now Open</strong><br>
+        Auckland Chess Academy is proud to be the regional organiser for the West and Central Auckland regions.
+        Team registration forms are available on the Interschools page. Please submit early to secure your spot.
+      </div>
+    </div>
+
+    <!-- Card grid -->
+    <div class="card-grid">
+
+      <div class="card">
+        <div class="card-header"><h3>Quick Links</h3></div>
+        <div class="card-body">
+          <ul>
+            <li><a href="https://www.aucklandchessacademy.com/interschools" target="_blank">Interschools 2026 Info</a></li>
+            <li><a href="https://www.aucklandchessacademy.com/events" target="_blank">Upcoming Events</a></li>
+            <li><a href="https://www.aucklandchessacademy.com/gallery" target="_blank">Photo Gallery</a></li>
+            <li><a href="mailto:info@aucklandchessacademy.com">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Upcoming Events</h3></div>
+        <div class="card-body">
+          <ul>
+            <li><strong>West Auckland Interschools</strong><br>Date TBC — Register via the website</li>
+            <li><strong>Central Auckland Interschools</strong><br>Date TBC — Register via the website</li>
+            <li><strong>Girls Championship 2026</strong><br>Date TBC</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Resources -->
+    <div class="card-full">
+      <div class="card-header"><h3>Members Resources</h3></div>
+      <div class="card-body">
+        <p>This section will contain members-only documents, resources, and downloads. Content coming soon.</p>
+        <br>
+        <p>For any questions, please email <a href="mailto:info@aucklandchessacademy.com">info@aucklandchessacademy.com</a>.</p>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      &copy; 2026 <a href="https://www.aucklandchessacademy.com" target="_blank">Auckland Chess Academy Ltd.</a>
+      &nbsp;|&nbsp; <a href="https://www.aucklandchessacademy.com" target="_blank">Back to Main Site</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ─────────────────────────────────────────────
+  //  Update this to match your login page URL
+  // ─────────────────────────────────────────────
+  const LOGIN_PAGE_URL = 'https://www.aucklandchessacademy.com/login';
+
+  function checkAuth() {
+    const token    = sessionStorage.getItem('aca_token');
+    const username = sessionStorage.getItem('aca_user');
+
+    if (!token || !username) {
+      // No valid session — redirect to login
+      window.location.replace(LOGIN_PAGE_URL);
+      return;
+    }
+
+    // Show page and personalise
+    document.getElementById('page-content').style.display = 'block';
+    const display = username.charAt(0).toUpperCase() + username.slice(1);
+    document.getElementById('welcome-heading').textContent = `Welcome back, ${display}!`;
+    document.getElementById('user-label').textContent = `Signed in as: ${username}`;
+  }
+
+  function signOut() {
+    sessionStorage.removeItem('aca_token');
+    sessionStorage.removeItem('aca_user');
+    sessionStorage.removeItem('aca_token_hash');
+    window.location.href = LOGIN_PAGE_URL;
+  }
+
+  // Run auth check immediately on load
+  checkAuth();
+</script>
+</body>
+</html>
